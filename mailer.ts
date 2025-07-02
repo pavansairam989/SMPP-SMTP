@@ -1,16 +1,14 @@
-import nodemailer from 'nodemailer';
-import Locals from './locals';
-import { CommonECodes } from "../constants/errcodes.constants";
-import AWS from "aws-sdk";
+const nodemailer=require('nodemailer');
+const AWS= require("aws-sdk");
 
 export const sendEmail = async (from: any, to: any, cc: any, subject: any, body: any,
     filePath: any = "", fileName: any = "") => {
 
     const transporter = nodemailer.createTransport({
         SES: new AWS.SES({
-            accessKeyId: Locals.config().awsKeySES,
-            secretAccessKey: Locals.config().awsSecretSES,
-            region: Locals.config().awsRegionSES,
+            accessKeyId: process.env.awsKeySES,
+            secretAccessKey: process.env.awsSecretSES,
+            region: process.env.awsRegionSES,
             apiVersion: '2010-12-01'
         })
     });
@@ -40,8 +38,8 @@ export const sendEmail = async (from: any, to: any, cc: any, subject: any, body:
         respObj.status = true;
     }).catch((error: any) => {
         respObj.status = false;
-        respObj.eCode = CommonECodes.EC_RESOURCE_ACCESS_ERROR.code
-        respObj.eDesc = CommonECodes.EC_RESOURCE_ACCESS_ERROR.description + ': Error Msg: ' + error?.message;
+        respObj.eCode = 500
+        respObj.eDesc ='Error Msg: ' + error?.message;
     });
     return respObj;
 };
